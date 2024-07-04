@@ -1,10 +1,10 @@
-import express from 'express'
+import { Router } from 'express';
 import { OrderController } from './order.controller';
 
-const router = express.Router();
-
-router.get('/', OrderController.getAllOrders);
+const router = Router();
 
 router.post('/', OrderController.createOrder);
+router.get('/', OrderController.getAllOrders);
+router.get('/', OrderController.getOrdersByEmail);
 
-export const OrderRouter = router;
+export const OrderRoutes = router;

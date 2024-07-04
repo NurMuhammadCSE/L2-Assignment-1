@@ -1,55 +1,37 @@
-import { ProductModel } from "../product/product.model";
-import { Torder } from "./order.interface";
-import { OrderModel } from "./order.model";
+import { ProductModel } from '../product/product.model';
+import { TOrder } from './order.interface';
+import { OrderModel } from './order.model';
 
-
-const createOrderIntoDB = async (orderData: Torder ) => {
-    const productId = orderData.productId;
-    const findProduct = await ProductModel.findOne({_id: productId});
-
-    if(findProduct){
-        if(findProduct.inventory.quantity >= orderData.quantity){
-            try {
-                const value = findProduct.inventory.quantity - orderData.quantity;
-                if(value){
-                    await ProductModel.findByIdAndUpdate({_id: productId}, { $set: { 'inventory.quantity': value }  }); 
-                }
-                else{
-                    await ProductModel.findByIdAndUpdate({_id: productId}, { $set: { 'inventory.quantity': value, 'inventory.inStock': false }  });
-                }
-                 
-                const result = await OrderModel.create(orderData);
-                return result;
-
-            } catch (error) {
-                return 5;
-            }
-        }
-        else{
-            return 2
-        }
+const createOrder = async (orderData: TOrder) => {
+    const product = await ProductModel.findById(orderData.productId);
     
-    }
-    else{
-        //res send
-        return 3;
+    if (!product) {
+        throw new Error('Product not found');
     }
     
-}
+    if (product.inventory.quantity < orderData.quantity) {
+        throw new Error('Insufficient quantity available in inventory');
+    }
+    
+    product.inventory.quantity -= orderData.quantity;
+    product.inventory.inStock = product.inventory.quantity > 0;
+    
+    await product.save();
+    
+    const order = new OrderModel(orderData);
+    return order.save();
+};
 
-const getOrdersFromDB = async () => {
+const getAllOrders = async () => {
+    return OrderModel.find();
+};
 
-    const result = await OrderModel.find()
-    return result
-}
-
-const getSingleOrderFromDB = async (email:any) => {
-    const result = await OrderModel.findOne({email});
-    return result;
-}
+const getOrdersByEmail = async (email: string) => {
+    return OrderModel.find({ email });
+};
 
 export const OrderServices = {
-    createOrderIntoDB,
-    getOrdersFromDB,
-    getSingleOrderFromDB
-}
+    createOrder,
+    getAllOrders,
+    getOrdersByEmail,
+};
