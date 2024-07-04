@@ -7,8 +7,21 @@ const createProduct = async (payload: TProduct) => {
   return result;
 };
 
-const getAllProducts = async () => {
-  const result = await ProductModel.find();
+const getAllProducts = async (searchTerm?: string) => {
+  let filter = {};
+  if (searchTerm) {
+    filter = {
+      $or: [
+        {
+          name: { $regex: searchTerm, $options: 'i' },
+        },
+        {
+          category: { $regex: searchTerm, $options: 'i' },
+        },
+      ],
+    };
+  }
+  const result = await ProductModel.find(filter);
   return result;
 };
 
@@ -17,14 +30,16 @@ const getSingleProduct = async (id: string) => {
   return result;
 };
 
-const productUpdate = async (id: string, updateProductData:TProduct) => {
-    //! Hard Mistake
-  const result = await ProductModel.findByIdAndUpdate(id, updateProductData, {new: true});
+const productUpdate = async (id: string, updateProductData: TProduct) => {
+  //! Hard Mistake
+  const result = await ProductModel.findByIdAndUpdate(id, updateProductData, {
+    new: true,
+  });
   return result;
 };
 
-const productDelete = async (id: string,) => {
-    //! Hard Mistake
+const productDelete = async (id: string) => {
+  //! Hard Mistake
   const result = await ProductModel.findByIdAndDelete(id);
   return result;
 };
@@ -34,5 +49,5 @@ export const ProductService = {
   getAllProducts,
   getSingleProduct,
   productUpdate,
-  productDelete
+  productDelete,
 };

@@ -23,21 +23,40 @@ const createProduct = async (req: Request, res: Response) => {
 };
 
 const getAllProducts = async (req: Request, res: Response) => {
-  try {
-    const result = await ProductService.getAllProducts();
-    //   console.log(result);
+  if (Object.keys(req.query).length == 0) {
+    try {
+      const result = await ProductService.getAllProducts();
+      //   console.log(result);
 
-    res.status(200).json({
-      success: true,
-      message: 'Product Fetched Successfully!',
-      data: result,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: 'Product is Not Successfully Fetched',
-      error,
-    });
+      res.status(200).json({
+        success: true,
+        message: 'Product Fetched Successfully!',
+        data: result,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: 'Product is Not Successfully Fetched',
+        error,
+      });
+    }
+  } else {
+    try {
+      const searchTerm = req.query.searchTerm as string | undefined;
+      const result = await ProductService.getAllProducts(searchTerm);
+
+      res.status(200).json({
+        success: true,
+        message: `Products matching search term '${searchTerm}' fetched successfully!`,
+        data: result,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: 'Product is Not Successfully Fetched',
+        error,
+      });
+    }
   }
 };
 
@@ -90,6 +109,7 @@ const productDelete = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: 'Single Product Deleted Successfully!',
+      data: result,
     });
   } catch (error) {
     res.status(400).json({
