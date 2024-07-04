@@ -40,8 +40,8 @@ const productSchema = new Schema<TProduct>({
   name: {
     type: String,
     required: true,
-    unique:true,
-    index:true
+    unique: true,
+    index: true,
   },
   description: {
     type: String,
