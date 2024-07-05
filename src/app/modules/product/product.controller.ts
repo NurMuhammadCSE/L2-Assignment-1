@@ -7,9 +7,9 @@ const createProduct = async (req: Request, res: Response) => {
     const productData = req.body;
 
     // Validate order data
-    const parsedOrderData = ProductValidation.productSchema.parse(productData);
+    const parsedProductData = ProductValidation.productSchema.parse(productData);
 
-    const result = await ProductService.createProduct(parsedOrderData);
+    const result = await ProductService.createProduct(parsedProductData);
     // console.log(result);
 
     res.status(200).json({

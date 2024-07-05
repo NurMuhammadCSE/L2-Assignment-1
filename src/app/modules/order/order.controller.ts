@@ -2,12 +2,14 @@ import { Request, Response } from 'express';
 import { OrderServices } from './order.service';
 import { ProductModel } from '../product/product.model';
 import { OrderModel } from './order.model';
+import { OrderValidation } from './order.validation';
 
 const createOrder = async (req: Request, res: Response) => {
   try {
     const orderData = req.body;
 
-    const product = await ProductModel.findById(orderData.productId);
+    const parsedOrderData = OrderValidation.orderSchema.parse(orderData);
+    const product = await ProductModel.findById(parsedOrderData.productId);
 
     // console.log(product);
 
