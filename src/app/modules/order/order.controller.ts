@@ -46,43 +46,81 @@ const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-const getAllOrders = async (req: Request, res: Response) => {
-  try {
-    const result = await OrderServices.getAllOrders();
-    res.status(200).json({
-      success: true,
-      message: 'Orders fetched successfully!',
-      data: result,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Could not fetch orders',
-      error: error,
-    });
-  }
-};
+// const getAllOrders = async (req: Request, res: Response) => {
+//   try {
+//     const result = await OrderServices.getAllOrders();
+//     res.status(200).json({
+//       success: true,
+//       message: 'Orders fetched successfully!',
+//       data: result,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: 'Could not fetch orders',
+//       error: error,
+//     });
+//   }
+// };
 
-const getOrdersByEmail = async (req: Request, res: Response) => {
-  try {
-    const email = req.query.email as string;
-    const result = await OrderServices.getOrdersByEmail(email);
-    res.status(200).json({
-      success: true,
-      message: 'Orders fetched successfully for user email!',
-      data: result,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Could not fetch orders',
-      error: error,
-    });
+// const getOrdersByEmail = async (req: Request, res: Response) => {
+//   try {
+//     const email = req.query.email as string;
+//     const result = await OrderServices.getOrdersByEmail(email);
+//     res.status(200).json({
+//       success: true,
+//       message: 'Orders fetched successfully for user email!',
+//       data: result,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: 'Could not fetch orders',
+//       error: error,
+//     });
+//   }
+// };
+
+const getAllOrders = async (req: Request, res: Response) => {
+  if (Object.keys(req.query).length == 0) {
+    try {
+      const result = await OrderServices.getAllOrders();
+      //   console.log(result);
+
+      res.status(200).json({
+        success: true,
+        message: 'Order Fetched Successfully!',
+        data: result,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: 'Order is Not Successfully Fetched',
+        error,
+      });
+    }
+  } else {
+    try {
+      const email = req.query.email as string | undefined;
+      const result = await OrderServices.getAllOrders(email);
+
+      res.status(200).json({
+        success: true,
+        message: `Orders fetched successfully for user email!`,
+        data: result,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: 'Orders is Not Successfully Fetched',
+        error,
+      });
+    }
   }
 };
 
 export const OrderController = {
   createOrder,
   getAllOrders,
-  getOrdersByEmail,
+  //   getOrdersByEmail,
 };

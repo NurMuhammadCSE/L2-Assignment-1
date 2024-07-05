@@ -7,16 +7,40 @@ const createOrder = async (payload: TOrder) => {
   return result;
 };
 
-const getAllOrders = async () => {
-  return OrderModel.find();
+const getAllOrders = async (email?: string) => {
+    let filter = {};
+  if (email) {
+    filter = {
+      $or: [
+        {
+          email: { $regex: email, $options: 'i' },
+        },
+      ],
+    };
+  }
+  const result = await OrderModel.find(filter);
+  return result;
 };
 
-const getOrdersByEmail = async (email: string) => {
-  return OrderModel.find({ email });
-};
+// const getOrdersByEmail = async (email?: string) => {
+//   let filter = {};
+//   if (email) {
+//     filter = {
+//       $or: [
+//         {
+//           email: { $regex: email, $options: 'i' },
+//         },
+//       ],
+//     };
+//   }
+
+//   // const result = await OrderModel.find({ email });
+//   const result = await OrderModel.find(filter);
+//   return result;
+// };
 
 export const OrderServices = {
   createOrder,
   getAllOrders,
-  getOrdersByEmail,
+  // getOrdersByEmail,
 };
